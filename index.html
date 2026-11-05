@@ -1,0 +1,2495 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendify 2.0 - Employee Attendance</title>
+
+<style>
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #eef2ff;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --dark: #1e293b;
+    --muted: #64748b;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --border: #e2e8f0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+}
+
+button, input, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* AUTHENTICATION */
+
+.auth-screen {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #312e81, #6366f1);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px #0002;
+}
+
+.auth-logo {
+    font-size: 38px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.auth-card h2 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 25px;
+}
+
+.field {
+    margin-bottom: 17px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    outline: none;
+    background: white;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: var(--primary);
+}
+
+.btn {
+    padding: 12px 17px;
+    border-radius: 9px;
+    font-weight: 700;
+    transition: .2s;
+}
+
+.btn-primary {
+    color: white;
+    background: var(--primary);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-success {
+    color: white;
+    background: var(--success);
+}
+
+.btn-warning {
+    color: white;
+    background: var(--warning);
+}
+
+.btn-danger {
+    color: white;
+    background: var(--danger);
+}
+
+.btn-light {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.auth-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin-bottom: 12px;
+    min-height: 18px;
+}
+
+.auth-link {
+    display: block;
+    text-align: center;
+    margin-top: 23px;
+    color: var(--primary);
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+.back-link {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* APPLICATION LAYOUT */
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: white;
+    border-right: 1px solid var(--border);
+    padding: 25px 17px;
+    flex-shrink: 0;
+}
+
+.brand {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 12px;
+    padding: 0 10px;
+}
+
+.role-label {
+    margin: 0 10px 35px;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--primary-light);
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 20px 10px 10px;
+}
+
+.nav-item {
+    width: 100%;
+    display: block;
+    padding: 13px;
+    border-radius: 9px;
+    text-align: left;
+    color: var(--muted);
+    background: transparent;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary);
+    background: var(--primary-light);
+    font-weight: 700;
+}
+
+.logout {
+    color: var(--danger);
+    margin-top: 25px;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 30px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.topbar h2 {
+    font-size: 23px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 50%;
+    font-weight: 800;
+}
+
+/* CONTENT */
+
+.welcome {
+    padding: 28px;
+    background: linear-gradient(120deg, #4338ca, #818cf8);
+    border-radius: 15px;
+    color: white;
+    margin-bottom: 23px;
+}
+
+.welcome h2 {
+    margin-bottom: 9px;
+}
+
+.welcome p {
+    font-size: 13px;
+    opacity: .9;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 21px;
+}
+
+.stat-card p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.stat-card h2 {
+    font-size: 28px;
+}
+
+.panel {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 23px;
+    border-radius: 13px;
+    margin-bottom: 20px;
+}
+
+.panel h3 {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.clock {
+    text-align: center;
+    margin: 25px 0;
+}
+
+.clock h1 {
+    color: var(--primary);
+    font-size: 43px;
+}
+
+.clock p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.attendance-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.attendance-buttons button {
+    padding: 17px;
+    color: white;
+    border-radius: 9px;
+    font-weight: 700;
+}
+
+.attendance-buttons button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.location {
+    padding: 13px;
+    background: var(--bg);
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 18px;
+    overflow-wrap: anywhere;
+}
+
+/* TABLE */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+}
+
+th {
+    background: #f8fafc;
+    color: var(--muted);
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-hadir {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.status-sakit {
+    color: #b45309;
+    background: #fef3c7;
+}
+
+.status-izin {
+    color: #4338ca;
+    background: #e0e7ff;
+}
+
+.status-active {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.status-inactive {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+/* CALENDAR */
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.calendar-header button {
+    padding: 9px 14px;
+    border-radius: 7px;
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 7px;
+}
+
+.day-name {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.calendar-day {
+    min-height: 58px;
+    padding: 10px 5px;
+    text-align: center;
+    border-radius: 8px;
+    background: #f1f5f9;
+    font-size: 13px;
+}
+
+.calendar-day.today {
+    outline: 2px solid var(--primary);
+}
+
+.calendar-day.hadir-day {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.calendar-day.sakit-day {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.calendar-day.izin-day {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.legend span::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+.legend-hadir::before { background: #16a34a; }
+.legend-sakit::before { background: #d97706; }
+.legend-izin::before { background: #4f46e5; }
+
+/* ADMIN */
+
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.employee-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.employee-form .full {
+    grid-column: 1 / -1;
+}
+
+.filter-input {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    outline: none;
+    width: 100%;
+    max-width: 280px;
+}
+
+.empty {
+    padding: 25px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 1000px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 700px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 13px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+        margin-bottom: 10px;
+    }
+
+    .role-label {
+        margin-bottom: 12px;
+    }
+
+    .nav-label {
+        display: none;
+    }
+
+    .nav-menu {
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+    }
+
+    .nav-item {
+        white-space: nowrap;
+        width: auto;
+        padding: 11px;
+        margin: 0;
+    }
+
+    .logout {
+        margin-top: 0;
+    }
+
+    .main {
+        padding: 17px;
+    }
+
+    .topbar h2 {
+        font-size: 18px;
+    }
+
+    .user-info span {
+        display: none;
+    }
+
+    .stats {
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-card h2 {
+        font-size: 23px;
+    }
+
+    .panel {
+        padding: 16px;
+    }
+
+    .attendance-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .clock h1 {
+        font-size: 35px;
+    }
+
+    .employee-form {
+        grid-template-columns: 1fr;
+    }
+
+    .employee-form .full {
+        grid-column: auto;
+    }
+
+    .calendar-day {
+        min-height: 45px;
+        padding: 8px 2px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- EMPLOYEE LOGIN -->
+
+<section id="employeeLogin" class="auth-screen">
+    <div class="auth-card">
+
+        <div class="auth-logo">📋</div>
+        <h2>Attendify</h2>
+
+        <p class="auth-subtitle">
+            Employee Attendance System
+        </p>
+
+        <div id="employeeError" class="auth-error"></div>
+
+        <form id="employeeLoginForm">
+
+            <div class="field">
+                <label>Username</label>
+                <input id="employeeUsername"
+                    type="text"
+                    autocomplete="username"
+                    required>
+            </div>
+
+            <div class="field">
+                <label>PIN / Password</label>
+                <input id="employeePassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required>
+            </div>
+
+            <button class="btn btn-primary btn-block">
+                Login Karyawan
+            </button>
+
+        </form>
+
+        <a class="auth-link" id="adminAccess">
+            Akses Administrator
+        </a>
+
+    </div>
+</section>
+
+
+<!-- ADMIN LOGIN -->
+
+<section id="adminLogin" class="auth-screen hidden">
+    <div class="auth-card">
+
+        <div class="auth-logo">🛡️</div>
+        <h2>Administrator</h2>
+
+        <p class="auth-subtitle">
+            Secure Management Portal
+        </p>
+
+        <div id="adminError" class="auth-error"></div>
+
+        <form id="adminLoginForm">
+
+            <div class="field">
+                <label>Username Admin</label>
+                <input id="adminUsername"
+                    type="text"
+                    autocomplete="username"
+                    required>
+            </div>
+
+            <div class="field">
+                <label>Password Admin</label>
+                <input id="adminPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    required>
+            </div>
+
+            <button class="btn btn-primary btn-block">
+                Login Administrator
+            </button>
+
+        </form>
+
+        <div class="back-link" id="backToEmployee">
+            ← Kembali ke Login Karyawan
+        </div>
+
+    </div>
+</section>
+
+
+<!-- FIRST ADMIN SETUP -->
+
+<section id="setupPage" class="auth-screen hidden">
+    <div class="auth-card">
+
+        <div class="auth-logo">🔐</div>
+        <h2>Initial Admin Setup</h2>
+
+        <p class="auth-subtitle">
+            Buat akun administrator pertama.
+        </p>
+
+        <div id="setupError" class="auth-error"></div>
+
+        <form id="setupForm">
+
+            <div class="field">
+                <label>Username Administrator</label>
+                <input id="setupUsername"
+                    type="text" minlength="4" required>
+            </div>
+
+            <div class="field">
+                <label>Password Administrator</label>
+                <input id="setupPassword"
+                    type="password" minlength="12" required>
+            </div>
+
+            <div class="field">
+                <label>Konfirmasi Password</label>
+                <input id="setupConfirm"
+                    type="password" minlength="12" required>
+            </div>
+
+            <button class="btn btn-primary btn-block">
+                Buat Administrator
+            </button>
+
+        </form>
+
+        <div class="back-link" id="setupBack">
+            ← Kembali
+        </div>
+
+    </div>
+</section>
+
+
+<!-- MAIN APPLICATION -->
+
+<div id="application" class="app hidden">
+
+    <aside class="sidebar">
+
+        <div class="brand">📋 Attendify</div>
+
+        <div id="roleLabel" class="role-label"></div>
+
+        <div class="nav-label">NAVIGATION</div>
+
+        <div class="nav-menu" id="navigation"></div>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <h2 id="pageTitle">Dashboard</h2>
+
+            <div class="user-info">
+                <span id="currentUserName"></span>
+                <div class="avatar" id="userAvatar">U</div>
+            </div>
+
+        </header>
+
+        <!-- EMPLOYEE DASHBOARD -->
+
+        <section id="employeeDashboard" class="hidden">
+
+            <div class="welcome">
+                <h2>
+                    Selamat Datang,
+                    <span id="employeeWelcome"></span> 👋
+                </h2>
+
+                <p>
+                    Selamat bekerja. Jangan lupa mencatat kehadiran Anda.
+                </p>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <p>Total Hadir</p>
+                    <h2 id="empHadir">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Total Sakit</p>
+                    <h2 id="empSakit">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Total Izin</p>
+                    <h2 id="empIzin">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Total Absensi</p>
+                    <h2 id="empTotal">0</h2>
+                </div>
+
+            </div>
+
+            <div class="panel">
+                <h3>📌 Kehadiran Hari Ini</h3>
+
+                <div class="clock">
+                    <h1 id="empClock">00:00:00</h1>
+                    <p id="empDate"></p>
+                </div>
+
+                <div id="empTodayStatus"
+                    class="empty">
+                    Belum melakukan absensi hari ini.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- EMPLOYEE ATTENDANCE -->
+
+        <section id="attendancePage" class="hidden">
+
+            <div class="panel">
+
+                <h3>🕒 Absensi Harian</h3>
+
+                <div class="clock">
+                    <h1 id="attendanceClock">00:00:00</h1>
+                    <p id="attendanceDate"></p>
+                </div>
+
+                <div class="attendance-buttons">
+
+                    <button class="btn-success"
+                        data-status="Hadir">
+                        ✓ Hadir
+                    </button>
+
+                    <button class="btn-warning"
+                        data-status="Sakit">
+                        + Sakit
+                    </button>
+
+                    <button class="btn-primary"
+                        data-status="Izin">
+                        ◷ Izin
+                    </button>
+
+                </div>
+
+                <div class="location" id="locationInfo">
+                    📍 Lokasi belum diambil.
+                </div>
+
+                <p id="attendanceInfo"
+                    style="margin-top:17px;font-size:13px;color:#64748b">
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- EMPLOYEE HISTORY -->
+
+        <section id="historyPage" class="hidden">
+
+            <div class="panel">
+
+                <h3>📑 Riwayat Absensi Saya</h3>
+
+                <div class="table-wrap">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                                <th>Status</th>
+                                <th>Lokasi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="employeeHistory"></tbody>
+
+                    </table>
+
+                </div>
+
+                <div id="employeeHistoryEmpty"
+                    class="empty">
+                    Belum ada riwayat absensi.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- EMPLOYEE CALENDAR -->
+
+        <section id="calendarPage" class="hidden">
+
+            <div class="panel">
+
+                <div class="calendar-header">
+
+                    <button id="prevMonth">←</button>
+
+                    <h3 id="monthTitle"></h3>
+
+                    <button id="nextMonth">→</button>
+
+                </div>
+
+                <div id="calendarGrid" class="calendar-grid"></div>
+
+                <div class="legend">
+                    <span class="legend-hadir">Hadir</span>
+                    <span class="legend-sakit">Sakit</span>
+                    <span class="legend-izin">Izin</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADMIN DASHBOARD -->
+
+        <section id="adminDashboard" class="hidden">
+
+            <div class="welcome">
+                <h2>Administrator Panel 🛡️</h2>
+                <p>
+                    Kelola akun karyawan dan pantau seluruh aktivitas absensi.
+                </p>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <p>Total Karyawan</p>
+                    <h2 id="adminEmployees">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Total Hadir</p>
+                    <h2 id="adminHadir">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Total Sakit</p>
+                    <h2 id="adminSakit">0</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Total Izin</p>
+                    <h2 id="adminIzin">0</h2>
+                </div>
+
+            </div>
+
+            <div class="panel">
+
+                <h3>📊 Rekapitulasi Absensi Seluruh Karyawan</h3>
+
+                <div class="admin-actions">
+
+                    <input id="adminSearch"
+                        class="filter-input"
+                        placeholder="Cari nama karyawan...">
+
+                    <button class="btn btn-light"
+                        id="refreshAdmin">
+                        ↻ Refresh Data
+                    </button>
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Karyawan</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                                <th>Status</th>
+                                <th>Lokasi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="adminHistory"></tbody>
+
+                    </table>
+
+                </div>
+
+                <div id="adminHistoryEmpty" class="empty">
+                    Belum ada data absensi.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADMIN EMPLOYEE MANAGEMENT -->
+
+        <section id="employeesPage" class="hidden">
+
+            <div class="panel">
+
+                <h3>👥 Tambah Karyawan</h3>
+
+                <form id="employeeForm">
+
+                    <div class="employee-form">
+
+                        <div class="field">
+                            <label>Nama Lengkap</label>
+                            <input id="newName"
+                                type="text"
+                                maxlength="80"
+                                required>
+                        </div>
+
+                        <div class="field">
+                            <label>Username</label>
+                            <input id="newUsername"
+                                type="text"
+                                minlength="4"
+                                maxlength="30"
+                                required>
+                        </div>
+
+                        <div class="field">
+                            <label>PIN / Password</label>
+                            <input id="newPassword"
+                                type="password"
+                                minlength="8"
+                                required>
+                        </div>
+
+                        <div class="field">
+                            <label>Departemen</label>
+                            <input id="newDepartment"
+                                type="text"
+                                maxlength="60"
+                                placeholder="Contoh: IT, HRD, Finance"
+                                required>
+                        </div>
+
+                        <div class="full">
+                            <button class="btn btn-primary">
+                                + Tambahkan Karyawan
+                            </button>
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h3>Daftar Karyawan</h3>
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Departemen</th>
+                                <th>Status Akun</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="employeeTable"></tbody>
+
+                    </table>
+
+                </div>
+
+                <div id="employeeTableEmpty" class="empty">
+                    Belum ada karyawan terdaftar.
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* ===================================
+   DATABASE LOKAL
+=================================== */
+
+const DB_KEY = "attendify_v2_database";
+const SESSION_KEY = "attendify_v2_session";
+
+let currentUser = null;
+let calendarDate = new Date();
+
+function loadDB() {
+
+    try {
+
+        const data = JSON.parse(
+            localStorage.getItem(DB_KEY) || "null"
+        );
+
+        if (
+            !data ||
+            !Array.isArray(data.users) ||
+            !Array.isArray(data.records)
+        ) {
+            return { users: [], records: [] };
+        }
+
+        return data;
+
+    } catch {
+
+        return { users: [], records: [] };
+
+    }
+
+}
+
+function saveDB(db) {
+
+    try {
+
+        localStorage.setItem(DB_KEY, JSON.stringify(db));
+        return true;
+
+    } catch {
+
+        alert("Penyimpanan gagal. Periksa kapasitas browser.");
+        return false;
+
+    }
+
+}
+
+
+/* ===================================
+   PASSWORD HASHING
+=================================== */
+
+// SHA-256 hanya untuk demonstrasi.
+// Produksi wajib menggunakan Argon2id/bcrypt
+// di backend dengan salt dan konfigurasi yang tepat.
+
+async function hashPassword(password) {
+
+    if (!window.crypto?.subtle) {
+        throw new Error(
+            "Web Crypto tidak tersedia. Gunakan localhost atau HTTPS."
+        );
+    }
+
+    const bytes = new TextEncoder().encode(password);
+
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+
+    return Array.from(new Uint8Array(hash))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+
+}
+
+function validPassword(password) {
+    return typeof password === "string" &&
+        password.length >= 8 &&
+        password.length <= 128;
+}
+
+function validUsername(username) {
+    return /^[a-zA-Z0-9_.-]{4,30}$/.test(username);
+}
+
+
+/* ===================================
+   AUTH PAGE NAVIGATION
+=================================== */
+
+const employeeLogin = document.getElementById("employeeLogin");
+const adminLogin = document.getElementById("adminLogin");
+const setupPage = document.getElementById("setupPage");
+const application = document.getElementById("application");
+
+function showAuth(screen) {
+
+    [employeeLogin, adminLogin, setupPage, application]
+        .forEach(el => el.classList.add("hidden"));
+
+    screen.classList.remove("hidden");
+
+}
+
+document.getElementById("adminAccess")
+.addEventListener("click", () => {
+
+    const db = loadDB();
+
+    if (!db.users.some(u => u.role === "admin")) {
+        showAuth(setupPage);
+    } else {
+        showAuth(adminLogin);
+    }
+
+});
+
+document.getElementById("backToEmployee")
+.addEventListener("click", () => showAuth(employeeLogin));
+
+document.getElementById("setupBack")
+.addEventListener("click", () => showAuth(employeeLogin));
+
+
+/* ===================================
+   FIRST ADMIN INITIALIZATION
+=================================== */
+
+document.getElementById("setupForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const username = document.getElementById("setupUsername")
+        .value.trim().toLowerCase();
+
+    const password = document.getElementById("setupPassword").value;
+
+    const confirmPassword =
+        document.getElementById("setupConfirm").value;
+
+    const error = document.getElementById("setupError");
+
+    error.textContent = "";
+
+    const db = loadDB();
+
+    if (db.users.some(u => u.role === "admin")) {
+        error.textContent =
+            "Administrator sudah terdaftar. Silakan login.";
+        return;
+    }
+
+    if (!validUsername(username)) {
+        error.textContent =
+            "Username harus 4-30 karakter dan hanya menggunakan huruf, angka, titik, garis bawah atau strip.";
+        return;
+    }
+
+    if (!validPassword(password)) {
+        error.textContent =
+            "Password minimal 8 karakter.";
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        error.textContent = "Konfirmasi password tidak cocok.";
+        return;
+    }
+
+    try {
+
+        const passwordHash = await hashPassword(password);
+
+        db.users.push({
+            id: crypto.randomUUID(),
+            name: "Administrator",
+            username,
+            passwordHash,
+            role: "admin",
+            active: true,
+            department: "Management",
+            createdAt: new Date().toISOString()
+        });
+
+        if (!saveDB(db)) return;
+
+        alert("Administrator berhasil dibuat.");
+
+        document.getElementById("setupForm").reset();
+
+        showAuth(adminLogin);
+
+    } catch (error) {
+
+        error.textContent = error.message;
+
+    }
+
+});
+
+
+/* ===================================
+   EMPLOYEE LOGIN
+=================================== */
+
+document.getElementById("employeeLoginForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const username = document.getElementById("employeeUsername")
+        .value.trim().toLowerCase();
+
+    const password = document.getElementById("employeePassword").value;
+
+    const error = document.getElementById("employeeError");
+
+    error.textContent = "";
+
+    try {
+
+        const db = loadDB();
+
+        const hash = await hashPassword(password);
+
+        const user = db.users.find(u =>
+            u.username === username &&
+            u.role === "employee" &&
+            u.active === true &&
+            u.passwordHash === hash
+        );
+
+        if (!user) {
+            error.textContent =
+                "Username atau password salah, atau akun tidak aktif.";
+            return;
+        }
+
+        loginUser(user);
+
+    } catch (err) {
+
+        error.textContent = err.message;
+
+    }
+
+});
+
+
+/* ===================================
+   ADMIN LOGIN
+=================================== */
+
+document.getElementById("adminLoginForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const username = document.getElementById("adminUsername")
+        .value.trim().toLowerCase();
+
+    const password = document.getElementById("adminPassword").value;
+
+    const error = document.getElementById("adminError");
+
+    error.textContent = "";
+
+    try {
+
+        const db = loadDB();
+
+        const hash = await hashPassword(password);
+
+        const user = db.users.find(u =>
+            u.username === username &&
+            u.role === "admin" &&
+            u.active === true &&
+            u.passwordHash === hash
+        );
+
+        if (!user) {
+            error.textContent =
+                "Kredensial administrator tidak valid.";
+            return;
+        }
+
+        loginUser(user);
+
+    } catch (err) {
+
+        error.textContent = err.message;
+
+    }
+
+});
+
+
+/* ===================================
+   LOGIN / LOGOUT / ROLE CONTROL
+=================================== */
+
+function loginUser(user) {
+
+    currentUser = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+        department: user.department
+    };
+
+    sessionStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify(currentUser)
+    );
+
+    showApplication();
+
+}
+
+function logout() {
+
+    currentUser = null;
+
+    sessionStorage.removeItem(SESSION_KEY);
+
+    document.getElementById("employeeLoginForm").reset();
+    document.getElementById("adminLoginForm").reset();
+
+    showAuth(employeeLogin);
+
+}
+
+function requireRole(role) {
+
+    if (!currentUser || currentUser.role !== role) {
+        alert("Anda tidak memiliki hak akses.");
+        return false;
+    }
+
+    return true;
+
+}
+
+function showApplication() {
+
+    if (!currentUser) {
+        logout();
+        return;
+    }
+
+    showAuth(application);
+
+    document.getElementById("currentUserName").textContent =
+        currentUser.name;
+
+    document.getElementById("userAvatar").textContent =
+        currentUser.name.charAt(0).toUpperCase();
+
+    document.getElementById("roleLabel").textContent =
+        currentUser.role === "admin"
+            ? "ADMINISTRATOR"
+            : "EMPLOYEE";
+
+    buildNavigation();
+
+    if (currentUser.role === "admin") {
+        navigate("admin");
+    } else {
+        navigate("dashboard");
+    }
+
+}
+
+
+/* ===================================
+   ROLE-BASED NAVIGATION
+=================================== */
+
+const employeeMenus = [
+    { id: "dashboard", title: "🏠 Dashboard" },
+    { id: "attendance", title: "🕒 Absensi Harian" },
+    { id: "history", title: "📑 Riwayat Absensi" },
+    { id: "calendar", title: "📅 Kalender Kehadiran" }
+];
+
+const adminMenus = [
+    { id: "admin", title: "📊 Dashboard Admin" },
+    { id: "employees", title: "👥 Manajemen Karyawan" }
+];
+
+function buildNavigation() {
+
+    const navigation = document.getElementById("navigation");
+
+    navigation.replaceChildren();
+
+    const menus = currentUser.role === "admin"
+        ? adminMenus
+        : employeeMenus;
+
+    menus.forEach(menu => {
+
+        const button = document.createElement("button");
+
+        button.className = "nav-item";
+        button.textContent = menu.title;
+
+        button.dataset.page = menu.id;
+
+        button.addEventListener("click", () => {
+            navigate(menu.id);
+        });
+
+        navigation.appendChild(button);
+
+    });
+
+    const logoutButton = document.createElement("button");
+
+    logoutButton.className = "nav-item logout";
+    logoutButton.textContent = "↪ Logout";
+    logoutButton.addEventListener("click", logout);
+
+    navigation.appendChild(logoutButton);
+
+}
+
+const pageNames = {
+    dashboard: "Dashboard",
+    attendance: "Absensi Harian",
+    history: "Riwayat Absensi",
+    calendar: "Kalender Kehadiran",
+    admin: "Dashboard Admin",
+    employees: "Manajemen Karyawan"
+};
+
+function navigate(page) {
+
+    const allowed = currentUser?.role === "admin"
+        ? ["admin", "employees"]
+        : ["dashboard", "attendance", "history", "calendar"];
+
+    if (!allowed.includes(page)) {
+        alert("Akses ditolak.");
+        return;
+    }
+
+    document.querySelectorAll(".nav-item")
+        .forEach(el => el.classList.toggle(
+            "active",
+            el.dataset.page === page
+        ));
+
+    const sections = [
+        "employeeDashboard",
+        "attendancePage",
+        "historyPage",
+        "calendarPage",
+        "adminDashboard",
+        "employeesPage"
+    ];
+
+    sections.forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+    });
+
+    const map = {
+        dashboard: "employeeDashboard",
+        attendance: "attendancePage",
+        history: "historyPage",
+        calendar: "calendarPage",
+        admin: "adminDashboard",
+        employees: "employeesPage"
+    };
+
+    document.getElementById(map[page]).classList.remove("hidden");
+
+    document.getElementById("pageTitle").textContent =
+        pageNames[page];
+
+    refreshData();
+
+}
+
+
+/* ===================================
+   DATE AND CLOCK
+=================================== */
+
+function todayKey() {
+
+    const d = new Date();
+
+    return [
+        d.getFullYear(),
+        String(d.getMonth() + 1).padStart(2, "0"),
+        String(d.getDate()).padStart(2, "0")
+    ].join("-");
+
+}
+
+function formatDate(date) {
+
+    return new Date(date + "T00:00:00")
+        .toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+}
+
+function formatTime(date) {
+
+    return new Date(date).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+
+}
+
+function updateClock() {
+
+    const now = new Date();
+
+    const time = now.toLocaleTimeString("id-ID");
+
+    const date = now.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    [
+        "empClock",
+        "attendanceClock"
+    ].forEach(id => {
+
+        document.getElementById(id).textContent = time;
+
+    });
+
+    [
+        "empDate",
+        "attendanceDate"
+    ].forEach(id => {
+
+        document.getElementById(id).textContent = date;
+
+    });
+
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+
+/* ===================================
+   ATTENDANCE RECORDS
+=================================== */
+
+function getMyRecords() {
+
+    const db = loadDB();
+
+    return db.records.filter(r =>
+        r.userId === currentUser.id
+    );
+
+}
+
+function getAllRecords() {
+    return loadDB().records;
+}
+
+
+/* ===================================
+   GPS LOCATION
+=================================== */
+
+function getLocation() {
+
+    return new Promise(resolve => {
+
+        if (!navigator.geolocation) {
+
+            resolve({
+                location: "GPS tidak didukung",
+                latitude: null,
+                longitude: null
+            });
+
+            return;
+
+        }
+
+        navigator.geolocation.getCurrentPosition(
+
+            position => {
+
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                resolve({
+                    location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+                    latitude: lat,
+                    longitude: lng
+                });
+
+            },
+
+            error => {
+
+                resolve({
+                    location: error.code === 1
+                        ? "Izin GPS ditolak"
+                        : "Lokasi tidak tersedia",
+                    latitude: null,
+                    longitude: null
+                });
+
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+
+        );
+
+    });
+
+}
+
+
+/* ===================================
+   EMPLOYEE ATTENDANCE ACTION
+=================================== */
+
+document.querySelectorAll("[data-status]")
+.forEach(button => {
+
+    button.addEventListener("click", async function() {
+
+        if (!requireRole("employee")) return;
+
+        const status = this.dataset.status;
+
+        const today = todayKey();
+
+        const db = loadDB();
+
+        const exists = db.records.some(r =>
+            r.userId === currentUser.id &&
+            r.date === today
+        );
+
+        if (exists) {
+            alert("Absensi hari ini sudah tercatat.");
+            return;
+        }
+
+        if (!confirm(`Konfirmasi status ${status}?`)) return;
+
+        const buttons = document.querySelectorAll("[data-status]");
+
+        buttons.forEach(b => b.disabled = true);
+
+        document.getElementById("locationInfo").textContent =
+            "📍 Mengambil lokasi...";
+
+        try {
+
+            const locationData = await getLocation();
+
+            if (todayKey() !== today) {
+                alert("Tanggal berubah. Silakan ulangi absensi.");
+                return;
+            }
+
+            const latestDB = loadDB();
+
+            const duplicate = latestDB.records.some(r =>
+                r.userId === currentUser.id &&
+                r.date === today
+            );
+
+            if (duplicate) {
+                alert("Absensi hari ini sudah tercatat.");
+                return;
+            }
+
+            latestDB.records.push({
+
+                id: crypto.randomUUID(),
+                userId: currentUser.id,
+                date: today,
+                time: new Date().toISOString(),
+                status,
+                location: locationData.location,
+                latitude: locationData.latitude,
+                longitude: locationData.longitude
+
+            });
+
+            if (!saveDB(latestDB)) return;
+
+            alert("Absensi berhasil dicatat!");
+
+            refreshData();
+
+        } finally {
+
+            buttons.forEach(b => b.disabled = false);
+
+        }
+
+    });
+
+});
+
+
+/* ===================================
+   EMPLOYEE DASHBOARD
+=================================== */
+
+function renderEmployeeDashboard() {
+
+    const records = getMyRecords();
+
+    const count = status =>
+        records.filter(r => r.status === status).length;
+
+    document.getElementById("employeeWelcome").textContent =
+        currentUser.name;
+
+    document.getElementById("empHadir").textContent = count("Hadir");
+    document.getElementById("empSakit").textContent = count("Sakit");
+    document.getElementById("empIzin").textContent = count("Izin");
+    document.getElementById("empTotal").textContent = records.length;
+
+    const today = records.find(r => r.date === todayKey());
+
+    const statusBox = document.getElementById("empTodayStatus");
+    const info = document.getElementById("attendanceInfo");
+    const location = document.getElementById("locationInfo");
+
+    if (today) {
+
+        statusBox.textContent =
+            `Status: ${today.status} | Waktu: ${formatTime(today.time)}`;
+
+        info.textContent =
+            `Absensi berhasil: ${today.status} pada ${formatTime(today.time)}.`;
+
+        location.textContent =
+            "📍 Lokasi: " + today.location;
+
+    } else {
+
+        statusBox.textContent =
+            "Belum melakukan absensi hari ini.";
+
+        info.textContent =
+            "Silakan pilih status kehadiran Anda.";
+
+        location.textContent =
+            "📍 Lokasi belum diambil.";
+
+    }
+
+}
+
+
+/* ===================================
+   HISTORY TABLE
+=================================== */
+
+function createStatusBadge(status) {
+
+    const badge = document.createElement("span");
+
+    badge.className = "status status-" + status.toLowerCase();
+    badge.textContent = status;
+
+    return badge;
+
+}
+
+function renderEmployeeHistory() {
+
+    const records = getMyRecords()
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    const table = document.getElementById("employeeHistory");
+
+    table.replaceChildren();
+
+    document.getElementById("employeeHistoryEmpty")
+        .classList.toggle("hidden", records.length > 0);
+
+    records.forEach((record, index) => {
+
+        const tr = document.createElement("tr");
+
+        const values = [
+            index + 1,
+            formatDate(record.date),
+            formatTime(record.time),
+            record.status,
+            record.location
+        ];
+
+        values.forEach((value, i) => {
+
+            const td = document.createElement("td");
+
+            if (i === 3) {
+                td.appendChild(createStatusBadge(record.status));
+            } else {
+                td.textContent = String(value);
+            }
+
+            tr.appendChild(td);
+
+        });
+
+        table.appendChild(tr);
+
+    });
+
+}
+
+
+/* ===================================
+   EMPLOYEE CALENDAR
+=================================== */
+
+function renderCalendar() {
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    document.getElementById("monthTitle").textContent =
+        calendarDate.toLocaleDateString("id-ID", {
+            month: "long",
+            year: "numeric"
+        });
+
+    const grid = document.getElementById("calendarGrid");
+
+    grid.replaceChildren();
+
+    const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+
+    days.forEach(day => {
+
+        const el = document.createElement("div");
+
+        el.className = "day-name";
+        el.textContent = day;
+
+        grid.appendChild(el);
+
+    });
+
+    const records = getMyRecords();
+    const today = todayKey();
+
+    for (let i = 0; i < firstDay; i++) {
+        grid.appendChild(document.createElement("div"));
+    }
+
+    for (let day = 1; day <= totalDays; day++) {
+
+        const key = [
+            year,
+            String(month + 1).padStart(2, "0"),
+            String(day).padStart(2, "0")
+        ].join("-");
+
+        const record = records.find(r => r.date === key);
+
+        const cell = document.createElement("div");
+
+        cell.className = "calendar-day";
+        cell.textContent = day;
+
+        if (key === today) {
+            cell.classList.add("today");
+        }
+
+        if (record) {
+
+            cell.classList.add(
+                record.status.toLowerCase() + "-day"
+            );
+
+            cell.title = record.status;
+
+        }
+
+        grid.appendChild(cell);
+
+    }
+
+}
+
+document.getElementById("prevMonth")
+.addEventListener("click", () => {
+
+    calendarDate.setMonth(calendarDate.getMonth() - 1);
+    renderCalendar();
+
+});
+
+document.getElementById("nextMonth")
+.addEventListener("click", () => {
+
+    calendarDate.setMonth(calendarDate.getMonth() + 1);
+    renderCalendar();
+
+});
+
+
+/* ===================================
+   ADMIN DASHBOARD
+=================================== */
+
+function renderAdminDashboard() {
+
+    if (!requireRole("admin")) return;
+
+    const db = loadDB();
+
+    const employees = db.users.filter(u =>
+        u.role === "employee"
+    );
+
+    const records = db.records;
+
+    document.getElementById("adminEmployees").textContent =
+        employees.length;
+
+    document.getElementById("adminHadir").textContent =
+        records.filter(r => r.status === "Hadir").length;
+
+    document.getElementById("adminSakit").textContent =
+        records.filter(r => r.status === "Sakit").length;
+
+    document.getElementById("adminIzin").textContent =
+        records.filter(r => r.status === "Izin").length;
+
+    renderAdminHistory();
+
+}
+
+
+/* ===================================
+   ADMIN ATTENDANCE MONITORING
+=================================== */
+
+function renderAdminHistory() {
+
+    if (!requireRole("admin")) return;
+
+    const db = loadDB();
+
+    const search = document.getElementById("adminSearch")
+        .value.trim().toLowerCase();
+
+    const employees = db.users.filter(u =>
+        u.role === "employee"
+    );
+
+    const userMap = new Map(
+        employees.map(u => [u.id, u])
+    );
+
+    const records = db.records
+        .filter(r => {
+            const user = userMap.get(r.userId);
+
+            return user &&
+                user.name.toLowerCase().includes(search);
+        })
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    const table = document.getElementById("adminHistory");
+
+    table.replaceChildren();
+
+    document.getElementById("adminHistoryEmpty")
+        .classList.toggle("hidden", records.length > 0);
+
+    records.forEach(record => {
+
+        const user = userMap.get(record.userId);
+
+        const tr = document.createElement("tr");
+
+        const values = [
+            user.name,
+            formatDate(record.date),
+            formatTime(record.time),
+            record.status,
+            record.location
+        ];
+
+        values.forEach((value, i) => {
+
+            const td = document.createElement("td");
+
+            if (i === 3) {
+                td.appendChild(createStatusBadge(record.status));
+            } else {
+                td.textContent = String(value);
+            }
+
+            tr.appendChild(td);
+
+        });
+
+        table.appendChild(tr);
+
+    });
+
+}
+
+document.getElementById("adminSearch")
+.addEventListener("input", renderAdminHistory);
+
+document.getElementById("refreshAdmin")
+.addEventListener("click", refreshData);
+
+
+/* ===================================
+   EMPLOYEE MANAGEMENT
+=================================== */
+
+document.getElementById("employeeForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    if (!requireRole("admin")) return;
+
+    const name = document.getElementById("newName")
+        .value.trim();
+
+    const username = document.getElementById("newUsername")
+        .value.trim().toLowerCase();
+
+    const password = document.getElementById("newPassword").value;
+
+    const department = document.getElementById("newDepartment")
+        .value.trim();
+
+    if (!name || !department) {
+        alert("Semua data wajib diisi.");
+        return;
+    }
+
+    if (!validUsername(username)) {
+        alert("Username minimal 4 karakter dan hanya boleh menggunakan huruf, angka, titik, strip, atau garis bawah.");
+        return;
+    }
+
+    if (!validPassword(password)) {
+        alert("Password minimal 8 karakter.");
+        return;
+    }
+
+    const db = loadDB();
+
+    if (db.users.some(u => u.username === username)) {
+        alert("Username sudah digunakan.");
+        return;
+    }
+
+    try {
+
+        const passwordHash = await hashPassword(password);
+
+        const latestDB = loadDB();
+
+        if (latestDB.users.some(u => u.username === username)) {
+            alert("Username sudah digunakan.");
+            return;
+        }
+
+        latestDB.users.push({
+
+            id: crypto.randomUUID(),
+            name,
+            username,
+            passwordHash,
+            department,
+            role: "employee",
+            active: true,
+            createdAt: new Date().toISOString()
+
+        });
+
+        if (!saveDB(latestDB)) return;
+
+        alert("Karyawan berhasil ditambahkan.");
+
+        this.reset();
+
+        renderEmployeeManagement();
+        renderAdminDashboard();
+
+    } catch (err) {
+
+        alert(err.message);
+
+    }
+
+});
+
+
+/* ===================================
+   EMPLOYEE ACCOUNT TABLE
+=================================== */
+
+function renderEmployeeManagement() {
+
+    if (!requireRole("admin")) return;
+
+    const db = loadDB();
+
+    const employees = db.users.filter(u =>
+        u.role === "employee"
+    );
+
+    const table = document.getElementById("employeeTable");
+
+    table.replaceChildren();
+
+    document.getElementById("employeeTableEmpty")
+        .classList.toggle("hidden", employees.length > 0);
+
+    employees.forEach(user => {
+
+        const tr = document.createElement("tr");
+
+        const name = document.createElement("td");
+        name.textContent = user.name;
+
+        const username = document.createElement("td");
+        username.textContent = user.username;
+
+        const department = document.createElement("td");
+        department.textContent = user.department;
+
+        const status = document.createElement("td");
+
+        const badge = document.createElement("span");
+
+        badge.className = user.active
+            ? "status status-active"
+            : "status status-inactive";
+
+        badge.textContent = user.active ? "Aktif" : "Nonaktif";
+
+        status.appendChild(badge);
+
+        const action = document.createElement("td");
+
+        const toggle = document.createElement("button");
+
+        toggle.className = user.active
+            ? "btn btn-danger"
+            : "btn btn-success";
+
+        toggle.style.padding = "7px 10px";
+        toggle.style.fontSize = "11px";
+
+        toggle.textContent = user.active
+            ? "Nonaktifkan"
+            : "Aktifkan";
+
+        toggle.addEventListener("click", () => {
+
+            if (!requireRole("admin")) return;
+
+            if (!confirm(
+                `${user.active ? "Nonaktifkan" : "Aktifkan"} akun ${user.name}?`
+            )) return;
+
+            const latestDB = loadDB();
+
+            const target = latestDB.users.find(u =>
+                u.id === user.id &&
+                u.role === "employee"
+            );
+
+            if (!target) return;
+
+            target.active = !target.active;
+
+            if (!saveDB(latestDB)) return;
+
+            renderEmployeeManagement();
+
+        });
+
+        action.appendChild(toggle);
+
+        [
+            name,
+            username,
+            department,
+            status,
+            action
+        ].forEach(td => tr.appendChild(td));
+
+        table.appendChild(tr);
+
+    });
+
+}
+
+
+/* ===================================
+   REFRESH APPLICATION DATA
+=================================== */
+
+function refreshData() {
+
+    if (!currentUser) return;
+
+    if (currentUser.role === "admin") {
+
+        renderAdminDashboard();
+
+        if (!document.getElementById("employeesPage").classList.contains("hidden")) {
+            renderEmployeeManagement();
+        }
+
+    } else {
+
+        renderEmployeeDashboard();
+        renderEmployeeHistory();
+        renderCalendar();
+
+    }
+
+}
+
+
+/* ===================================
+   RESTORE SESSION
+=================================== */
+
+function restoreSession() {
+
+    try {
+
+        const saved = JSON.parse(
+            sessionStorage.getItem(SESSION_KEY) || "null"
+        );
+
+        if (!saved || !saved.id) {
+            showAuth(employeeLogin);
+            return;
+        }
+
+        // Validasi kembali role dan status akun
+        // terhadap database lokal.
+
+        const db = loadDB();
+
+        const user = db.users.find(u =>
+            u.id === saved.id &&
+            u.active === true &&
+            u.role === saved.role
+        );
+
+        if (!user) {
+            logout();
+            return;
+        }
+
+        loginUser(user);
+
+    } catch {
+
+        logout();
+
+    }
+
+}
+
+
+/* ===================================
+   INITIALIZE
+=================================== */
+
+restoreSession();
+
+</script>
+
+</body>
+</html>
