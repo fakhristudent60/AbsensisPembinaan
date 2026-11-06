@@ -1,21 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Attendify 2.0 - Employee Attendance</title>
+<title>Attendify 2.0 - Halaqah Attendance System (Supabase)</title>
+<!-- SDK Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-const SUPABASE_URL = "https://rpozbdgigvzxpzrfsqay.supabase.co/rest/v1/";
-const SUPABASE_KEY = "sb_publishable_I87la83LPy4EQPJ3Luvc4Q_E0U0xO8z";
-
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-</script>
 <style>
 :root {
     --primary: #4f46e5;
@@ -31,7 +22,7 @@ const supabase = window.supabase.createClient(
     --border: #e2e8f0;
 }
 
-* {
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -57,7 +48,6 @@ button {
 }
 
 /* AUTHENTICATION */
-
 .auth-screen {
     min-height: 100vh;
     display: flex;
@@ -73,7 +63,7 @@ button {
     background: white;
     padding: 35px;
     border-radius: 18px;
-    box-shadow: 0 20px 50px #0002;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
 }
 
 .auth-logo {
@@ -124,7 +114,7 @@ button {
     padding: 12px 17px;
     border-radius: 9px;
     font-weight: 700;
-    transition: .2s;
+    transition: 0.2s;
 }
 
 .btn-primary {
@@ -191,7 +181,6 @@ button {
 }
 
 /* APPLICATION LAYOUT */
-
 .app {
     display: flex;
     min-height: 100vh;
@@ -293,7 +282,6 @@ button {
 }
 
 /* CONTENT */
-
 .welcome {
     padding: 28px;
     background: linear-gradient(120deg, #4338ca, #818cf8);
@@ -308,7 +296,7 @@ button {
 
 .welcome p {
     font-size: 13px;
-    opacity: .9;
+    opacity: 0.9;
 }
 
 .stats {
@@ -378,7 +366,7 @@ button {
 }
 
 .attendance-buttons button:disabled {
-    opacity: .5;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
@@ -393,7 +381,6 @@ button {
 }
 
 /* TABLE */
-
 .table-wrap {
     overflow-x: auto;
 }
@@ -450,7 +437,6 @@ th {
 }
 
 /* CALENDAR */
-
 .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -531,7 +517,6 @@ th {
 .legend-izin::before { background: #4f46e5; }
 
 /* ADMIN */
-
 .admin-actions {
     display: flex;
     justify-content: space-between;
@@ -541,13 +526,13 @@ th {
     margin-bottom: 18px;
 }
 
-.employee-form {
+.member-form {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
 }
 
-.employee-form .full {
+.member-form .full {
     grid-column: 1 / -1;
 }
 
@@ -567,8 +552,6 @@ th {
     font-size: 13px;
 }
 
-/* RESPONSIVE */
-
 @media(max-width: 1000px) {
     .stats {
         grid-template-columns: repeat(2, 1fr);
@@ -579,87 +562,68 @@ th {
     .app {
         flex-direction: column;
     }
-
     .sidebar {
         width: 100%;
         padding: 13px;
         border-right: none;
         border-bottom: 1px solid var(--border);
     }
-
     .brand {
         margin-bottom: 10px;
     }
-
     .role-label {
         margin-bottom: 12px;
     }
-
     .nav-label {
         display: none;
     }
-
     .nav-menu {
         display: flex;
         overflow-x: auto;
         gap: 5px;
     }
-
     .nav-item {
         white-space: nowrap;
         width: auto;
         padding: 11px;
         margin: 0;
     }
-
     .logout {
         margin-top: 0;
     }
-
     .main {
         padding: 17px;
     }
-
     .topbar h2 {
         font-size: 18px;
     }
-
     .user-info span {
         display: none;
     }
-
     .stats {
         gap: 10px;
     }
-
     .stat-card {
         padding: 15px;
     }
-
     .stat-card h2 {
         font-size: 23px;
     }
-
     .panel {
         padding: 16px;
     }
-
     .attendance-buttons {
         grid-template-columns: 1fr;
     }
-
     .clock h1 {
         font-size: 35px;
     }
-
-    .employee-form {
+    .member-form {
         grid-template-columns: 1fr;
     }
-
-    .employee-form .full {
+    .member-form .full {
         grid-column: auto;
     }
-
     .calendar-day {
         min-height: 45px;
         padding: 8px 2px;
@@ -670,287 +634,125 @@ th {
 
 <body>
 
-<!-- EMPLOYEE LOGIN -->
-
-<section id="employeeLogin" class="auth-screen">
+<!-- MEMBER LOGIN -->
+<section id="memberLogin" class="auth-screen">
     <div class="auth-card">
-
-        <div class="auth-logo">📋</div>
-        <h2>Attendify</h2>
-
-        <p class="auth-subtitle">
-            Employee Attendance System
-        </p>
-
-        <div id="employeeError" class="auth-error"></div>
-
-        <form id="employeeLoginForm">
-
+        <div class="auth-logo">📖</div>
+        <h2>Halaqah Attendify</h2>
+        <p class="auth-subtitle">Sistem Absensi Komunitas Halaqah</p>
+        <div id="memberError" class="auth-error"></div>
+        <form id="memberLoginForm">
             <div class="field">
                 <label>Username</label>
-                <input id="employeeUsername"
-                    type="text"
-                    autocomplete="username"
-                    required>
+                <input id="memberUsername" type="text" autocomplete="username" required>
             </div>
-
             <div class="field">
-                <label>PIN / Password</label>
-                <input id="employeePassword"
-                    type="password"
-                    autocomplete="current-password"
-                    required>
+                <label>Password</label>
+                <input id="memberPassword" type="password" autocomplete="current-password" required>
             </div>
-
-            <button class="btn btn-primary btn-block">
-                Login Karyawan
-            </button>
-
+            <button class="btn btn-primary btn-block">Login Member</button>
         </form>
-
-        <a class="auth-link" id="adminAccess">
-            Akses Administrator
-        </a>
-
+        <a class="auth-link" id="adminAccess">Akses Pemandu / Admin</a>
     </div>
 </section>
-
 
 <!-- ADMIN LOGIN -->
-
 <section id="adminLogin" class="auth-screen hidden">
     <div class="auth-card">
-
         <div class="auth-logo">🛡️</div>
-        <h2>Administrator</h2>
-
-        <p class="auth-subtitle">
-            Secure Management Portal
-        </p>
-
+        <h2>Pemandu Halaqah</h2>
+        <p class="auth-subtitle">Portal Manajemen Admin</p>
         <div id="adminError" class="auth-error"></div>
-
         <form id="adminLoginForm">
-
             <div class="field">
                 <label>Username Admin</label>
-                <input id="adminUsername"
-                    type="text"
-                    autocomplete="username"
-                    required>
+                <input id="adminUsername" type="text" autocomplete="username" required>
             </div>
-
             <div class="field">
                 <label>Password Admin</label>
-                <input id="adminPassword"
-                    type="password"
-                    autocomplete="current-password"
-                    required>
+                <input id="adminPassword" type="password" autocomplete="current-password" required>
             </div>
-
-            <button class="btn btn-primary btn-block">
-                Login Administrator
-            </button>
-
+            <button class="btn btn-primary btn-block">Login Admin</button>
         </form>
-
-        <div class="back-link" id="backToEmployee">
-            ← Kembali ke Login Karyawan
-        </div>
-
+        <div class="back-link" id="backToMember">← Kembali ke Login Member</div>
     </div>
 </section>
-
-
-<!-- FIRST ADMIN SETUP -->
-
-<section id="setupPage" class="auth-screen hidden">
-    <div class="auth-card">
-
-        <div class="auth-logo">🔐</div>
-        <h2>Initial Admin Setup</h2>
-
-        <p class="auth-subtitle">
-            Buat akun administrator pertama.
-        </p>
-
-        <div id="setupError" class="auth-error"></div>
-
-        <form id="setupForm">
-
-            <div class="field">
-                <label>Username Administrator</label>
-                <input id="setupUsername"
-                    type="text" minlength="4" required>
-            </div>
-
-            <div class="field">
-                <label>Password Administrator</label>
-                <input id="setupPassword"
-                    type="password" minlength="12" required>
-            </div>
-
-            <div class="field">
-                <label>Konfirmasi Password</label>
-                <input id="setupConfirm"
-                    type="password" minlength="12" required>
-            </div>
-
-            <button class="btn btn-primary btn-block">
-                Buat Administrator
-            </button>
-
-        </form>
-
-        <div class="back-link" id="setupBack">
-            ← Kembali
-        </div>
-
-    </div>
-</section>
-
 
 <!-- MAIN APPLICATION -->
-
 <div id="application" class="app hidden">
-
     <aside class="sidebar">
-
-        <div class="brand">📋 Attendify</div>
-
+        <div class="brand">📖 Halaqah</div>
         <div id="roleLabel" class="role-label"></div>
-
-        <div class="nav-label">NAVIGATION</div>
-
+        <div class="nav-label">NAVIGASI</div>
         <div class="nav-menu" id="navigation"></div>
-
     </aside>
 
     <main class="main">
-
         <header class="topbar">
-
             <h2 id="pageTitle">Dashboard</h2>
-
             <div class="user-info">
                 <span id="currentUserName"></span>
                 <div class="avatar" id="userAvatar">U</div>
             </div>
-
         </header>
 
-        <!-- EMPLOYEE DASHBOARD -->
-
-        <section id="employeeDashboard" class="hidden">
-
+        <!-- MEMBER DASHBOARD -->
+        <section id="memberDashboard" class="hidden">
             <div class="welcome">
-                <h2>
-                    Selamat Datang,
-                    <span id="employeeWelcome"></span> 👋
-                </h2>
-
-                <p>
-                    Selamat bekerja. Jangan lupa mencatat kehadiran Anda.
-                </p>
+                <h2>Selamat Datang, <span id="memberWelcome"></span> 👋</h2>
+                <p>Barakallahu fiikum. Jangan lupa mencatat kehadiran halaqah Anda hari ini.</p>
             </div>
-
             <div class="stats">
-
                 <div class="stat-card">
                     <p>Total Hadir</p>
-                    <h2 id="empHadir">0</h2>
+                    <h2 id="memHadir">0</h2>
                 </div>
-
                 <div class="stat-card">
                     <p>Total Sakit</p>
-                    <h2 id="empSakit">0</h2>
+                    <h2 id="memSakit">0</h2>
                 </div>
-
                 <div class="stat-card">
                     <p>Total Izin</p>
-                    <h2 id="empIzin">0</h2>
+                    <h2 id="memIzin">0</h2>
                 </div>
-
                 <div class="stat-card">
                     <p>Total Absensi</p>
-                    <h2 id="empTotal">0</h2>
+                    <h2 id="memTotal">0</h2>
                 </div>
-
             </div>
-
             <div class="panel">
                 <h3>📌 Kehadiran Hari Ini</h3>
-
                 <div class="clock">
-                    <h1 id="empClock">00:00:00</h1>
-                    <p id="empDate"></p>
+                    <h1 id="memClock">00:00:00</h1>
+                    <p id="memDate"></p>
                 </div>
-
-                <div id="empTodayStatus"
-                    class="empty">
-                    Belum melakukan absensi hari ini.
-                </div>
-
+                <div id="memTodayStatus" class="empty">Belum melakukan absensi hari ini.</div>
             </div>
-
         </section>
 
-
-        <!-- EMPLOYEE ATTENDANCE -->
-
+        <!-- MEMBER ATTENDANCE -->
         <section id="attendancePage" class="hidden">
-
             <div class="panel">
-
-                <h3>🕒 Absensi Harian</h3>
-
+                <h3>🕒 Absensi Halaqah</h3>
                 <div class="clock">
                     <h1 id="attendanceClock">00:00:00</h1>
                     <p id="attendanceDate"></p>
                 </div>
-
                 <div class="attendance-buttons">
-
-                    <button class="btn-success"
-                        data-status="Hadir">
-                        ✓ Hadir
-                    </button>
-
-                    <button class="btn-warning"
-                        data-status="Sakit">
-                        + Sakit
-                    </button>
-
-                    <button class="btn-primary"
-                        data-status="Izin">
-                        ◷ Izin
-                    </button>
-
+                    <button class="btn-success" data-status="Hadir">✓ Hadir</button>
+                    <button class="btn-warning" data-status="Sakit">+ Sakit</button>
+                    <button class="btn-primary" data-status="Izin">◷ Izin</button>
                 </div>
-
-                <div class="location" id="locationInfo">
-                    📍 Lokasi belum diambil.
-                </div>
-
-                <p id="attendanceInfo"
-                    style="margin-top:17px;font-size:13px;color:#64748b">
-                </p>
-
+                <div class="location" id="locationInfo">📍 Lokasi belum diambil.</div>
+                <p id="attendanceInfo" style="margin-top:17px;font-size:13px;color:#64748b"></p>
             </div>
-
         </section>
 
-
-        <!-- EMPLOYEE HISTORY -->
-
+        <!-- MEMBER HISTORY -->
         <section id="historyPage" class="hidden">
-
             <div class="panel">
-
                 <h3>📑 Riwayat Absensi Saya</h3>
-
                 <div class="table-wrap">
-
                     <table>
                         <thead>
                             <tr>
@@ -961,538 +763,306 @@ th {
                                 <th>Lokasi</th>
                             </tr>
                         </thead>
-
-                        <tbody id="employeeHistory"></tbody>
-
+                        <tbody id="memberHistory"></tbody>
                     </table>
-
                 </div>
-
-                <div id="employeeHistoryEmpty"
-                    class="empty">
-                    Belum ada riwayat absensi.
-                </div>
-
+                <div id="memberHistoryEmpty" class="empty">Belum ada riwayat absensi.</div>
             </div>
-
         </section>
 
-
-        <!-- EMPLOYEE CALENDAR -->
-
+        <!-- MEMBER CALENDAR -->
         <section id="calendarPage" class="hidden">
-
             <div class="panel">
-
                 <div class="calendar-header">
-
                     <button id="prevMonth">←</button>
-
                     <h3 id="monthTitle"></h3>
-
                     <button id="nextMonth">→</button>
-
                 </div>
-
                 <div id="calendarGrid" class="calendar-grid"></div>
-
                 <div class="legend">
                     <span class="legend-hadir">Hadir</span>
                     <span class="legend-sakit">Sakit</span>
                     <span class="legend-izin">Izin</span>
                 </div>
-
             </div>
-
         </section>
 
-
         <!-- ADMIN DASHBOARD -->
-
         <section id="adminDashboard" class="hidden">
-
             <div class="welcome">
-                <h2>Administrator Panel 🛡️</h2>
-                <p>
-                    Kelola akun karyawan dan pantau seluruh aktivitas absensi.
-                </p>
+                <h2>Panel Pemandu Halaqah 🛡️</h2>
+                <p>Kelola data member dan pantau kehadiran halaqah secara keseluruhan.</p>
             </div>
-
             <div class="stats">
-
                 <div class="stat-card">
-                    <p>Total Karyawan</p>
-                    <h2 id="adminEmployees">0</h2>
+                    <p>Total Member</p>
+                    <h2 id="adminMembers">0</h2>
                 </div>
-
                 <div class="stat-card">
                     <p>Total Hadir</p>
                     <h2 id="adminHadir">0</h2>
                 </div>
-
                 <div class="stat-card">
                     <p>Total Sakit</p>
                     <h2 id="adminSakit">0</h2>
                 </div>
-
                 <div class="stat-card">
                     <p>Total Izin</p>
                     <h2 id="adminIzin">0</h2>
                 </div>
-
             </div>
-
             <div class="panel">
-
-                <h3>📊 Rekapitulasi Absensi Seluruh Karyawan</h3>
-
+                <h3>📊 Rekapitulasi Absensi Member</h3>
                 <div class="admin-actions">
-
-                    <input id="adminSearch"
-                        class="filter-input"
-                        placeholder="Cari nama karyawan...">
-
-                    <button class="btn btn-light"
-                        id="refreshAdmin">
-                        ↻ Refresh Data
-                    </button>
-
+                    <input id="adminSearch" class="filter-input" placeholder="Cari nama member...">
+                    <button class="btn btn-light" id="refreshAdmin">↻ Refresh Data</button>
                 </div>
-
                 <div class="table-wrap">
-
                     <table>
                         <thead>
                             <tr>
-                                <th>Karyawan</th>
+                                <th>Member</th>
                                 <th>Tanggal</th>
                                 <th>Waktu</th>
                                 <th>Status</th>
                                 <th>Lokasi</th>
                             </tr>
                         </thead>
-
                         <tbody id="adminHistory"></tbody>
-
                     </table>
-
                 </div>
-
-                <div id="adminHistoryEmpty" class="empty">
-                    Belum ada data absensi.
-                </div>
-
+                <div id="adminHistoryEmpty" class="empty">Belum ada data absensi.</div>
             </div>
-
         </section>
 
-
-        <!-- ADMIN EMPLOYEE MANAGEMENT -->
-
-        <section id="employeesPage" class="hidden">
-
+        <!-- ADMIN MEMBER MANAGEMENT -->
+        <section id="membersManagementPage" class="hidden">
             <div class="panel">
-
-                <h3>👥 Tambah Karyawan</h3>
-
-                <form id="employeeForm">
-
-                    <div class="employee-form">
-
+                <h3>👥 Tambah Member Halaqah</h3>
+                <form id="memberForm">
+                    <div class="member-form">
                         <div class="field">
                             <label>Nama Lengkap</label>
-                            <input id="newName"
-                                type="text"
-                                maxlength="80"
-                                required>
+                            <input id="newName" type="text" maxlength="80" required>
                         </div>
-
                         <div class="field">
                             <label>Username</label>
-                            <input id="newUsername"
-                                type="text"
-                                minlength="4"
-                                maxlength="30"
-                                required>
+                            <input id="newUsername" type="text" minlength="4" maxlength="30" required>
                         </div>
-
                         <div class="field">
-                            <label>PIN / Password</label>
-                            <input id="newPassword"
-                                type="password"
-                                minlength="8"
-                                required>
+                            <label>Password</label>
+                            <input id="newPassword" type="password" minlength="6" required>
                         </div>
-
                         <div class="field">
-                            <label>Departemen</label>
-                            <input id="newDepartment"
-                                type="text"
-                                maxlength="60"
-                                placeholder="Contoh: IT, HRD, Finance"
-                                required>
+                            <label>Kelompok / Halaqah</label>
+                            <input id="newDepartment" type="text" maxlength="60" placeholder="Contoh: Halaqah A" required>
                         </div>
-
                         <div class="full">
-                            <button class="btn btn-primary">
-                                + Tambahkan Karyawan
-                            </button>
+                            <button class="btn btn-primary">+ Tambahkan Member</button>
                         </div>
-
                     </div>
-
                 </form>
-
             </div>
-
-
             <div class="panel">
-
-                <h3>Daftar Karyawan</h3>
-
+                <h3>Daftar Member Halaqah</h3>
                 <div class="table-wrap">
-
                     <table>
-
                         <thead>
                             <tr>
                                 <th>Nama</th>
                                 <th>Username</th>
-                                <th>Departemen</th>
+                                <th>Kelompok</th>
                                 <th>Status Akun</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-
-                        <tbody id="employeeTable"></tbody>
-
+                        <tbody id="memberTable"></tbody>
                     </table>
-
                 </div>
-
-                <div id="employeeTableEmpty" class="empty">
-                    Belum ada karyawan terdaftar.
-                </div>
-
+                <div id="memberTableEmpty" class="empty">Belum ada member terdaftar.</div>
             </div>
-
         </section>
-
     </main>
-
 </div>
 
-
 <script>
-
 /* ===================================
-   DATABASE LOKAL
+   KONFIGURASI SUPABASE (DENGAN PLACEHOLDER)
+   Ganti 'YOUR_SUPABASE_URL' dan 'YOUR_SUPABASE_ANON_KEY' 
+   dengan kredensial asli dari dashboard Supabase Anda.
 =================================== */
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+let supabaseClient = null;
 
-const DB_KEY = "attendify_v2_database";
-const SESSION_KEY = "attendify_v2_session";
+if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
 
+const SESSION_KEY = "attendify_halaqah_session";
 let currentUser = null;
 let calendarDate = new Date();
 
-function loadDB() {
-
-    try {
-
-        const data = JSON.parse(
-            localStorage.getItem(DB_KEY) || "null"
-        );
-
-        if (
-            !data ||
-            !Array.isArray(data.users) ||
-            !Array.isArray(data.records)
-        ) {
-            return { users: [], records: [] };
-        }
-
-        return data;
-
-    } catch {
-
-        return { users: [], records: [] };
-
-    }
-
-}
-
-function saveDB(db) {
-
-    try {
-
-        localStorage.setItem(DB_KEY, JSON.stringify(db));
-        return true;
-
-    } catch {
-
-        alert("Penyimpanan gagal. Periksa kapasitas browser.");
-        return false;
-
-    }
-
-}
-
-
-/* ===================================
-   PASSWORD HASHING
-=================================== */
-
-// SHA-256 hanya untuk demonstrasi.
-// Produksi wajib menggunakan Argon2id/bcrypt
-// di backend dengan salt dan konfigurasi yang tepat.
-
 async function hashPassword(password) {
-
-    if (!window.crypto?.subtle) {
-        throw new Error(
-            "Web Crypto tidak tersedia. Gunakan localhost atau HTTPS."
-        );
-    }
-
     const bytes = new TextEncoder().encode(password);
-
     const hash = await crypto.subtle.digest("SHA-256", bytes);
-
     return Array.from(new Uint8Array(hash))
         .map(b => b.toString(16).padStart(2, "0"))
         .join("");
-
 }
 
-function validPassword(password) {
-    return typeof password === "string" &&
-        password.length >= 8 &&
-        password.length <= 128;
+/* ===================================
+   FUNGSI DATABASE SUPABASE (BERGESER DARI LOCALSTORAGE)
+=================================== */
+async function loadDB() {
+    let users = [];
+    let records = [];
+
+    if (supabaseClient) {
+        // Ambil data dari tabel Supabase
+        const { data: userData, error: userError } = await supabaseClient.from('users').select('*');
+        if (!userError && userData) {
+            users = userData.map(u => ({
+                id: u.id,
+                name: u.name,
+                username: u.username,
+                passwordHash: u.password_hash,
+                role: u.role,
+                department: u.department,
+                active: u.active
+            }));
+        }
+
+        const { data: recData, error: recError } = await supabaseClient.from('records').select('*');
+        if (!recError && recData) {
+            records = recData.map(r => ({
+                id: r.id,
+                userId: r.user_id,
+                date: r.date,
+                time: r.time,
+                status: r.status,
+                location: r.location,
+                latitude: r.latitude,
+                longitude: r.longitude
+            }));
+        }
+    }
+
+    // Pastikan Admin Utama (PemanduHalaqoh) selalu ada di database
+    const adminExists = users.some(u => u.username === "pemanduhalaqoh");
+    if (!adminExists) {
+        const adminHash = await hashPassword("CalonMoeslimEngineer123");
+        const newAdmin = {
+            name: "Pemandu Halaqah",
+            username: "pemanduhalaqoh",
+            password_hash: adminHash,
+            role: "admin",
+            active: true,
+            department: "Pusat"
+        };
+        
+        if (supabaseClient) {
+            const { data, error } = await supabaseClient.from('users').insert([newAdmin]).select();
+            if (!error && data) {
+                users.push({
+                    id: data[0].id,
+                    name: data[0].name,
+                    username: data[0].username,
+                    passwordHash: data[0].password_hash,
+                    role: data[0].role,
+                    department: data[0].department,
+                    active: data[0].active
+                });
+            }
+        }
+    }
+
+    return { users, records };
 }
 
 function validUsername(username) {
     return /^[a-zA-Z0-9_.-]{4,30}$/.test(username);
 }
 
-
 /* ===================================
-   AUTH PAGE NAVIGATION
+   NAVIGASI HALAMAN OTENTIKASI
 =================================== */
-
-const employeeLogin = document.getElementById("employeeLogin");
+const memberLogin = document.getElementById("memberLogin");
 const adminLogin = document.getElementById("adminLogin");
-const setupPage = document.getElementById("setupPage");
 const application = document.getElementById("application");
 
 function showAuth(screen) {
-
-    [employeeLogin, adminLogin, setupPage, application]
-        .forEach(el => el.classList.add("hidden"));
-
+    [memberLogin, adminLogin, application].forEach(el => el.classList.add("hidden"));
     screen.classList.remove("hidden");
-
 }
 
-document.getElementById("adminAccess")
-.addEventListener("click", () => {
-
-    const db = loadDB();
-
-    if (!db.users.some(u => u.role === "admin")) {
-        showAuth(setupPage);
-    } else {
-        showAuth(adminLogin);
-    }
-
-});
-
-document.getElementById("backToEmployee")
-.addEventListener("click", () => showAuth(employeeLogin));
-
-document.getElementById("setupBack")
-.addEventListener("click", () => showAuth(employeeLogin));
-
+document.getElementById("adminAccess").addEventListener("click", () => showAuth(adminLogin));
+document.getElementById("backToMember").addEventListener("click", () => showAuth(memberLogin));
 
 /* ===================================
-   FIRST ADMIN INITIALIZATION
+   LOGIN MEMBER
 =================================== */
-
-document.getElementById("setupForm")
-.addEventListener("submit", async function(e) {
-
+document.getElementById("memberLoginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
-    const username = document.getElementById("setupUsername")
-        .value.trim().toLowerCase();
-
-    const password = document.getElementById("setupPassword").value;
-
-    const confirmPassword =
-        document.getElementById("setupConfirm").value;
-
-    const error = document.getElementById("setupError");
-
-    error.textContent = "";
-
-    const db = loadDB();
-
-    if (db.users.some(u => u.role === "admin")) {
-        error.textContent =
-            "Administrator sudah terdaftar. Silakan login.";
-        return;
-    }
-
-    if (!validUsername(username)) {
-        error.textContent =
-            "Username harus 4-30 karakter dan hanya menggunakan huruf, angka, titik, garis bawah atau strip.";
-        return;
-    }
-
-    if (!validPassword(password)) {
-        error.textContent =
-            "Password minimal 8 karakter.";
-        return;
-    }
-
-    if (password !== confirmPassword) {
-        error.textContent = "Konfirmasi password tidak cocok.";
-        return;
-    }
-
-    try {
-
-        const passwordHash = await hashPassword(password);
-
-        db.users.push({
-            id: crypto.randomUUID(),
-            name: "Administrator",
-            username,
-            passwordHash,
-            role: "admin",
-            active: true,
-            department: "Management",
-            createdAt: new Date().toISOString()
-        });
-
-        if (!saveDB(db)) return;
-
-        alert("Administrator berhasil dibuat.");
-
-        document.getElementById("setupForm").reset();
-
-        showAuth(adminLogin);
-
-    } catch (error) {
-
-        error.textContent = error.message;
-
-    }
-
-});
-
-
-/* ===================================
-   EMPLOYEE LOGIN
-=================================== */
-
-document.getElementById("employeeLoginForm")
-.addEventListener("submit", async function(e) {
-
-    e.preventDefault();
-
-    const username = document.getElementById("employeeUsername")
-        .value.trim().toLowerCase();
-
-    const password = document.getElementById("employeePassword").value;
-
-    const error = document.getElementById("employeeError");
-
+    const username = document.getElementById("memberUsername").value.trim().toLowerCase();
+    const password = document.getElementById("memberPassword").value;
+    const error = document.getElementById("memberError");
     error.textContent = "";
 
     try {
-
-        const db = loadDB();
-
+        const db = await loadDB();
         const hash = await hashPassword(password);
-
-        const user = db.users.find(u =>
-            u.username === username &&
-            u.role === "employee" &&
-            u.active === true &&
+        const user = db.users.find(u => 
+            u.username === username && 
+            u.role === "member" && 
+            u.active === true && 
             u.passwordHash === hash
         );
 
         if (!user) {
-            error.textContent =
-                "Username atau password salah, atau akun tidak aktif.";
+            error.textContent = "Username atau password salah, atau akun tidak aktif.";
             return;
         }
-
         loginUser(user);
-
     } catch (err) {
-
         error.textContent = err.message;
-
     }
-
 });
 
-
 /* ===================================
-   ADMIN LOGIN
+   LOGIN ADMIN (PemanduHalaqoh)
 =================================== */
-
-document.getElementById("adminLoginForm")
-.addEventListener("submit", async function(e) {
-
+document.getElementById("adminLoginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
-    const username = document.getElementById("adminUsername")
-        .value.trim().toLowerCase();
-
+    const username = document.getElementById("adminUsername").value.trim().toLowerCase();
     const password = document.getElementById("adminPassword").value;
-
     const error = document.getElementById("adminError");
-
     error.textContent = "";
 
     try {
-
-        const db = loadDB();
-
+        const db = await loadDB();
         const hash = await hashPassword(password);
-
-        const user = db.users.find(u =>
-            u.username === username &&
-            u.role === "admin" &&
-            u.active === true &&
+        const user = db.users.find(u => 
+            u.username === username && 
+            u.role === "admin" && 
+            u.active === true && 
             u.passwordHash === hash
         );
 
         if (!user) {
-            error.textContent =
-                "Kredensial administrator tidak valid.";
+            error.textContent = "Kredensial administrator tidak valid.";
             return;
         }
-
         loginUser(user);
-
     } catch (err) {
-
         error.textContent = err.message;
-
     }
-
 });
 
-
 /* ===================================
-   LOGIN / LOGOUT / ROLE CONTROL
+   SESSION & ROLE MANAGEMENT
 =================================== */
-
 function loginUser(user) {
-
     currentUser = {
         id: user.id,
         username: user.username,
@@ -1500,76 +1070,48 @@ function loginUser(user) {
         role: user.role,
         department: user.department
     };
-
-    sessionStorage.setItem(
-        SESSION_KEY,
-        JSON.stringify(currentUser)
-    );
-
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
     showApplication();
-
 }
 
 function logout() {
-
     currentUser = null;
-
     sessionStorage.removeItem(SESSION_KEY);
-
-    document.getElementById("employeeLoginForm").reset();
+    document.getElementById("memberLoginForm").reset();
     document.getElementById("adminLoginForm").reset();
-
-    showAuth(employeeLogin);
-
+    showAuth(memberLogin);
 }
 
 function requireRole(role) {
-
     if (!currentUser || currentUser.role !== role) {
-        alert("Anda tidak memiliki hak akses.");
+        alert("Akses ditolak.");
         return false;
     }
-
     return true;
-
 }
 
 function showApplication() {
-
     if (!currentUser) {
         logout();
         return;
     }
-
     showAuth(application);
-
-    document.getElementById("currentUserName").textContent =
-        currentUser.name;
-
-    document.getElementById("userAvatar").textContent =
-        currentUser.name.charAt(0).toUpperCase();
-
-    document.getElementById("roleLabel").textContent =
-        currentUser.role === "admin"
-            ? "ADMINISTRATOR"
-            : "EMPLOYEE";
+    document.getElementById("currentUserName").textContent = currentUser.name;
+    document.getElementById("userAvatar").textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById("roleLabel").textContent = currentUser.role === "admin" ? "PEMANDU HALAQAH" : "MEMBER";
 
     buildNavigation();
-
     if (currentUser.role === "admin") {
         navigate("admin");
     } else {
         navigate("dashboard");
     }
-
 }
 
-
 /* ===================================
-   ROLE-BASED NAVIGATION
+   NAVIGASI MENU
 =================================== */
-
-const employeeMenus = [
+const memberMenus = [
     { id: "dashboard", title: "🏠 Dashboard" },
     { id: "attendance", title: "🕒 Absensi Harian" },
     { id: "history", title: "📑 Riwayat Absensi" },
@@ -1578,59 +1120,42 @@ const employeeMenus = [
 
 const adminMenus = [
     { id: "admin", title: "📊 Dashboard Admin" },
-    { id: "employees", title: "👥 Manajemen Karyawan" }
+    { id: "membersManagement", title: "👥 Manajemen Member" }
 ];
 
 function buildNavigation() {
-
     const navigation = document.getElementById("navigation");
-
     navigation.replaceChildren();
 
-    const menus = currentUser.role === "admin"
-        ? adminMenus
-        : employeeMenus;
-
+    const menus = currentUser.role === "admin" ? adminMenus : memberMenus;
     menus.forEach(menu => {
-
         const button = document.createElement("button");
-
         button.className = "nav-item";
         button.textContent = menu.title;
-
         button.dataset.page = menu.id;
-
-        button.addEventListener("click", () => {
-            navigate(menu.id);
-        });
-
+        button.addEventListener("click", () => navigate(menu.id));
         navigation.appendChild(button);
-
     });
 
     const logoutButton = document.createElement("button");
-
     logoutButton.className = "nav-item logout";
     logoutButton.textContent = "↪ Logout";
     logoutButton.addEventListener("click", logout);
-
     navigation.appendChild(logoutButton);
-
 }
 
 const pageNames = {
-    dashboard: "Dashboard",
+    dashboard: "Dashboard Member",
     attendance: "Absensi Harian",
     history: "Riwayat Absensi",
     calendar: "Kalender Kehadiran",
-    admin: "Dashboard Admin",
-    employees: "Manajemen Karyawan"
+    admin: "Dashboard Pemandu",
+    membersManagement: "Manajemen Member"
 };
 
 function navigate(page) {
-
-    const allowed = currentUser?.role === "admin"
-        ? ["admin", "employees"]
+    const allowed = currentUser?.role === "admin" 
+        ? ["admin", "membersManagement"] 
         : ["dashboard", "attendance", "history", "calendar"];
 
     if (!allowed.includes(page)) {
@@ -1638,220 +1163,98 @@ function navigate(page) {
         return;
     }
 
-    document.querySelectorAll(".nav-item")
-        .forEach(el => el.classList.toggle(
-            "active",
-            el.dataset.page === page
-        ));
-
-    const sections = [
-        "employeeDashboard",
-        "attendancePage",
-        "historyPage",
-        "calendarPage",
-        "adminDashboard",
-        "employeesPage"
-    ];
-
-    sections.forEach(id => {
-        document.getElementById(id).classList.add("hidden");
+    document.querySelectorAll(".nav-item").forEach(el => {
+        el.classList.toggle("active", el.dataset.page === page);
     });
 
+    const sections = [
+        "memberDashboard", "attendancePage", "historyPage", 
+        "calendarPage", "adminDashboard", "membersManagementPage"
+    ];
+
+    sections.forEach(id => document.getElementById(id).classList.add("hidden"));
+
     const map = {
-        dashboard: "employeeDashboard",
+        dashboard: "memberDashboard",
         attendance: "attendancePage",
         history: "historyPage",
         calendar: "calendarPage",
         admin: "adminDashboard",
-        employees: "employeesPage"
+        membersManagement: "membersManagementPage"
     };
 
     document.getElementById(map[page]).classList.remove("hidden");
-
-    document.getElementById("pageTitle").textContent =
-        pageNames[page];
-
+    document.getElementById("pageTitle").textContent = pageNames[page];
     refreshData();
-
 }
 
-
 /* ===================================
-   DATE AND CLOCK
+   WAKTU & CLOCK
 =================================== */
-
 function todayKey() {
-
     const d = new Date();
-
-    return [
-        d.getFullYear(),
-        String(d.getMonth() + 1).padStart(2, "0"),
-        String(d.getDate()).padStart(2, "0")
-    ].join("-");
-
+    return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
 }
 
 function formatDate(date) {
-
-    return new Date(date + "T00:00:00")
-        .toLocaleDateString("id-ID", {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-
+    return new Date(date + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 }
 
 function formatTime(date) {
-
-    return new Date(date).toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-    });
-
+    return new Date(date).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 function updateClock() {
-
     const now = new Date();
-
     const time = now.toLocaleTimeString("id-ID");
+    const date = now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-    const date = now.toLocaleDateString("id-ID", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
+    ["memClock", "attendanceClock"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = time;
     });
-
-    [
-        "empClock",
-        "attendanceClock"
-    ].forEach(id => {
-
-        document.getElementById(id).textContent = time;
-
+    ["memDate", "attendanceDate"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = date;
     });
-
-    [
-        "empDate",
-        "attendanceDate"
-    ].forEach(id => {
-
-        document.getElementById(id).textContent = date;
-
-    });
-
 }
-
 updateClock();
 setInterval(updateClock, 1000);
 
-
 /* ===================================
-   ATTENDANCE RECORDS
+   PENCATATAN ABSENSI & GPS
 =================================== */
-
-function getMyRecords() {
-
-    const db = loadDB();
-
-    return db.records.filter(r =>
-        r.userId === currentUser.id
-    );
-
+async function getMyRecords() {
+    const db = await loadDB();
+    return db.records.filter(r => r.userId === currentUser.id);
 }
-
-function getAllRecords() {
-    return loadDB().records;
-}
-
-
-/* ===================================
-   GPS LOCATION
-=================================== */
 
 function getLocation() {
-
     return new Promise(resolve => {
-
         if (!navigator.geolocation) {
-
-            resolve({
-                location: "GPS tidak didukung",
-                latitude: null,
-                longitude: null
-            });
-
+            resolve({ location: "GPS tidak didukung", latitude: null, longitude: null });
             return;
-
         }
-
         navigator.geolocation.getCurrentPosition(
-
             position => {
-
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-
-                resolve({
-                    location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
-                    latitude: lat,
-                    longitude: lng
-                });
-
+                resolve({ location: `${lat.toFixed(6)}, ${lng.toFixed(6)}`, latitude: lat, longitude: lng });
             },
-
-            error => {
-
-                resolve({
-                    location: error.code === 1
-                        ? "Izin GPS ditolak"
-                        : "Lokasi tidak tersedia",
-                    latitude: null,
-                    longitude: null
-                });
-
-            },
-
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-
+            () => resolve({ location: "Lokasi tidak diizinkan/tersedia", latitude: null, longitude: null }),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
-
     });
-
 }
 
-
-/* ===================================
-   EMPLOYEE ATTENDANCE ACTION
-=================================== */
-
-document.querySelectorAll("[data-status]")
-.forEach(button => {
-
+document.querySelectorAll("[data-status]").forEach(button => {
     button.addEventListener("click", async function() {
-
-        if (!requireRole("employee")) return;
-
+        if (!requireRole("member")) return;
         const status = this.dataset.status;
-
         const today = todayKey();
+        const db = await loadDB();
 
-        const db = loadDB();
-
-        const exists = db.records.some(r =>
-            r.userId === currentUser.id &&
-            r.date === today
-        );
-
-        if (exists) {
+        if (db.records.some(r => r.userId === currentUser.id && r.date === today)) {
             alert("Absensi hari ini sudah tercatat.");
             return;
         }
@@ -1859,211 +1262,116 @@ document.querySelectorAll("[data-status]")
         if (!confirm(`Konfirmasi status ${status}?`)) return;
 
         const buttons = document.querySelectorAll("[data-status]");
-
         buttons.forEach(b => b.disabled = true);
-
-        document.getElementById("locationInfo").textContent =
-            "📍 Mengambil lokasi...";
+        document.getElementById("locationInfo").textContent = "📍 Mengambil lokasi...";
 
         try {
-
             const locationData = await getLocation();
+            const latestDB = await loadDB();
 
-            if (todayKey() !== today) {
-                alert("Tanggal berubah. Silakan ulangi absensi.");
-                return;
-            }
-
-            const latestDB = loadDB();
-
-            const duplicate = latestDB.records.some(r =>
-                r.userId === currentUser.id &&
-                r.date === today
-            );
-
-            if (duplicate) {
+            if (latestDB.records.some(r => r.userId === currentUser.id && r.date === today)) {
                 alert("Absensi hari ini sudah tercatat.");
                 return;
             }
 
-            latestDB.records.push({
-
-                id: crypto.randomUUID(),
-                userId: currentUser.id,
+            const newRecord = {
+                user_id: currentUser.id,
                 date: today,
                 time: new Date().toISOString(),
                 status,
                 location: locationData.location,
                 latitude: locationData.latitude,
                 longitude: locationData.longitude
+            };
 
-            });
-
-            if (!saveDB(latestDB)) return;
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('records').insert([newRecord]);
+                if (error) {
+                    alert("Gagal menyimpan absensi ke Supabase: " + error.message);
+                    return;
+                }
+            }
 
             alert("Absensi berhasil dicatat!");
-
             refreshData();
-
         } finally {
-
             buttons.forEach(b => b.disabled = false);
-
         }
-
     });
-
 });
 
-
 /* ===================================
-   EMPLOYEE DASHBOARD
+   RENDER DASHBOARD & RIWAYAT MEMBER
 =================================== */
+async function renderMemberDashboard() {
+    const records = await getMyRecords();
+    const count = status => records.filter(r => r.status === status).length;
 
-function renderEmployeeDashboard() {
-
-    const records = getMyRecords();
-
-    const count = status =>
-        records.filter(r => r.status === status).length;
-
-    document.getElementById("employeeWelcome").textContent =
-        currentUser.name;
-
-    document.getElementById("empHadir").textContent = count("Hadir");
-    document.getElementById("empSakit").textContent = count("Sakit");
-    document.getElementById("empIzin").textContent = count("Izin");
-    document.getElementById("empTotal").textContent = records.length;
+    document.getElementById("memberWelcome").textContent = currentUser.name;
+    document.getElementById("memHadir").textContent = count("Hadir");
+    document.getElementById("memSakit").textContent = count("Sakit");
+    document.getElementById("memIzin").textContent = count("Izin");
+    document.getElementById("memTotal").textContent = records.length;
 
     const today = records.find(r => r.date === todayKey());
-
-    const statusBox = document.getElementById("empTodayStatus");
-    const info = document.getElementById("attendanceInfo");
-    const location = document.getElementById("locationInfo");
+    const statusBox = document.getElementById("memTodayStatus");
 
     if (today) {
-
-        statusBox.textContent =
-            `Status: ${today.status} | Waktu: ${formatTime(today.time)}`;
-
-        info.textContent =
-            `Absensi berhasil: ${today.status} pada ${formatTime(today.time)}.`;
-
-        location.textContent =
-            "📍 Lokasi: " + today.location;
-
+        statusBox.textContent = `Status: ${today.status} | Waktu: ${formatTime(today.time)}`;
     } else {
-
-        statusBox.textContent =
-            "Belum melakukan absensi hari ini.";
-
-        info.textContent =
-            "Silakan pilih status kehadiran Anda.";
-
-        location.textContent =
-            "📍 Lokasi belum diambil.";
-
+        statusBox.textContent = "Belum melakukan absensi hari ini.";
     }
-
 }
-
-
-/* ===================================
-   HISTORY TABLE
-=================================== */
 
 function createStatusBadge(status) {
-
     const badge = document.createElement("span");
-
     badge.className = "status status-" + status.toLowerCase();
     badge.textContent = status;
-
     return badge;
-
 }
 
-function renderEmployeeHistory() {
-
-    const records = getMyRecords()
-        .sort((a, b) => b.date.localeCompare(a.date));
-
-    const table = document.getElementById("employeeHistory");
-
+async function renderMemberHistory() {
+    const records = (await getMyRecords()).sort((a, b) => b.date.localeCompare(a.date));
+    const table = document.getElementById("memberHistory");
     table.replaceChildren();
 
-    document.getElementById("employeeHistoryEmpty")
-        .classList.toggle("hidden", records.length > 0);
+    document.getElementById("memberHistoryEmpty").classList.toggle("hidden", records.length > 0);
 
     records.forEach((record, index) => {
-
         const tr = document.createElement("tr");
+        const values = [index + 1, formatDate(record.date), formatTime(record.time), record.status, record.location];
 
-        const values = [
-            index + 1,
-            formatDate(record.date),
-            formatTime(record.time),
-            record.status,
-            record.location
-        ];
-
-        values.forEach((value, i) => {
-
+        values.forEach((val, i) => {
             const td = document.createElement("td");
-
             if (i === 3) {
                 td.appendChild(createStatusBadge(record.status));
             } else {
-                td.textContent = String(value);
+                td.textContent = String(val);
             }
-
             tr.appendChild(td);
-
         });
-
         table.appendChild(tr);
-
     });
-
 }
 
-
-/* ===================================
-   EMPLOYEE CALENDAR
-=================================== */
-
-function renderCalendar() {
-
+async function renderCalendar() {
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
-
     const firstDay = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
 
-    document.getElementById("monthTitle").textContent =
-        calendarDate.toLocaleDateString("id-ID", {
-            month: "long",
-            year: "numeric"
-        });
-
+    document.getElementById("monthTitle").textContent = calendarDate.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
     const grid = document.getElementById("calendarGrid");
-
     grid.replaceChildren();
 
-    const days = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
-
-    days.forEach(day => {
-
+    ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"].forEach(day => {
         const el = document.createElement("div");
-
         el.className = "day-name";
         el.textContent = day;
-
         grid.appendChild(el);
-
     });
 
-    const records = getMyRecords();
+    const records = await getMyRecords();
     const today = todayKey();
 
     for (let i = 0; i < firstDay; i++) {
@@ -2071,434 +1379,227 @@ function renderCalendar() {
     }
 
     for (let day = 1; day <= totalDays; day++) {
-
-        const key = [
-            year,
-            String(month + 1).padStart(2, "0"),
-            String(day).padStart(2, "0")
-        ].join("-");
-
+        const key = [year, String(month + 1).padStart(2, "0"), String(day).padStart(2, "0")].join("-");
         const record = records.find(r => r.date === key);
-
         const cell = document.createElement("div");
-
         cell.className = "calendar-day";
         cell.textContent = day;
 
-        if (key === today) {
-            cell.classList.add("today");
-        }
-
+        if (key === today) cell.classList.add("today");
         if (record) {
-
-            cell.classList.add(
-                record.status.toLowerCase() + "-day"
-            );
-
+            cell.classList.add(record.status.toLowerCase() + "-day");
             cell.title = record.status;
-
         }
-
         grid.appendChild(cell);
-
     }
-
 }
 
-document.getElementById("prevMonth")
-.addEventListener("click", () => {
-
+document.getElementById("prevMonth").addEventListener("click", () => {
     calendarDate.setMonth(calendarDate.getMonth() - 1);
     renderCalendar();
-
 });
-
-document.getElementById("nextMonth")
-.addEventListener("click", () => {
-
+document.getElementById("nextMonth").addEventListener("click", () => {
     calendarDate.setMonth(calendarDate.getMonth() + 1);
     renderCalendar();
-
 });
 
-
 /* ===================================
-   ADMIN DASHBOARD
+   PANEL ADMIN (PEMANDU)
 =================================== */
-
-function renderAdminDashboard() {
-
+async function renderAdminDashboard() {
     if (!requireRole("admin")) return;
-
-    const db = loadDB();
-
-    const employees = db.users.filter(u =>
-        u.role === "employee"
-    );
-
+    const db = await loadDB();
+    const members = db.users.filter(u => u.role === "member");
     const records = db.records;
 
-    document.getElementById("adminEmployees").textContent =
-        employees.length;
-
-    document.getElementById("adminHadir").textContent =
-        records.filter(r => r.status === "Hadir").length;
-
-    document.getElementById("adminSakit").textContent =
-        records.filter(r => r.status === "Sakit").length;
-
-    document.getElementById("adminIzin").textContent =
-        records.filter(r => r.status === "Izin").length;
+    document.getElementById("adminMembers").textContent = members.length;
+    document.getElementById("adminHadir").textContent = records.filter(r => r.status === "Hadir").length;
+    document.getElementById("adminSakit").textContent = records.filter(r => r.status === "Sakit").length;
+    document.getElementById("adminIzin").textContent = records.filter(r => r.status === "Izin").length;
 
     renderAdminHistory();
-
 }
 
-
-/* ===================================
-   ADMIN ATTENDANCE MONITORING
-=================================== */
-
-function renderAdminHistory() {
-
+async function renderAdminHistory() {
     if (!requireRole("admin")) return;
-
-    const db = loadDB();
-
-    const search = document.getElementById("adminSearch")
-        .value.trim().toLowerCase();
-
-    const employees = db.users.filter(u =>
-        u.role === "employee"
-    );
-
-    const userMap = new Map(
-        employees.map(u => [u.id, u])
-    );
+    const db = await loadDB();
+    const search = document.getElementById("adminSearch").value.trim().toLowerCase();
+    const members = db.users.filter(u => u.role === "member");
+    const userMap = new Map(members.map(u => [u.id, u]));
 
     const records = db.records
         .filter(r => {
             const user = userMap.get(r.userId);
-
-            return user &&
-                user.name.toLowerCase().includes(search);
+            return user && user.name.toLowerCase().includes(search);
         })
         .sort((a, b) => b.date.localeCompare(a.date));
 
     const table = document.getElementById("adminHistory");
-
     table.replaceChildren();
-
-    document.getElementById("adminHistoryEmpty")
-        .classList.toggle("hidden", records.length > 0);
+    document.getElementById("adminHistoryEmpty").classList.toggle("hidden", records.length > 0);
 
     records.forEach(record => {
-
         const user = userMap.get(record.userId);
-
+        if (!user) return;
         const tr = document.createElement("tr");
+        const values = [user.name, formatDate(record.date), formatTime(record.time), record.status, record.location];
 
-        const values = [
-            user.name,
-            formatDate(record.date),
-            formatTime(record.time),
-            record.status,
-            record.location
-        ];
-
-        values.forEach((value, i) => {
-
+        values.forEach((val, i) => {
             const td = document.createElement("td");
-
             if (i === 3) {
                 td.appendChild(createStatusBadge(record.status));
             } else {
-                td.textContent = String(value);
+                td.textContent = String(val);
             }
-
             tr.appendChild(td);
-
         });
-
         table.appendChild(tr);
-
     });
-
 }
 
-document.getElementById("adminSearch")
-.addEventListener("input", renderAdminHistory);
-
-document.getElementById("refreshAdmin")
-.addEventListener("click", refreshData);
-
+document.getElementById("adminSearch").addEventListener("input", renderAdminHistory);
+document.getElementById("refreshAdmin").addEventListener("click", refreshData);
 
 /* ===================================
-   EMPLOYEE MANAGEMENT
+   MANAJEMEN MEMBER OLEH ADMIN
 =================================== */
-
-document.getElementById("employeeForm")
-.addEventListener("submit", async function(e) {
-
+document.getElementById("memberForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-
     if (!requireRole("admin")) return;
 
-    const name = document.getElementById("newName")
-        .value.trim();
-
-    const username = document.getElementById("newUsername")
-        .value.trim().toLowerCase();
-
+    const name = document.getElementById("newName").value.trim();
+    const username = document.getElementById("newUsername").value.trim().toLowerCase();
     const password = document.getElementById("newPassword").value;
-
-    const department = document.getElementById("newDepartment")
-        .value.trim();
-
-    if (!name || !department) {
-        alert("Semua data wajib diisi.");
-        return;
-    }
+    const department = document.getElementById("newDepartment").value.trim();
 
     if (!validUsername(username)) {
-        alert("Username minimal 4 karakter dan hanya boleh menggunakan huruf, angka, titik, strip, atau garis bawah.");
+        alert("Username minimal 4 karakter (alfanumerik/titik/strip/garis bawah).");
+        return;
+    }
+    if (password.length < 6) {
+        alert("Password minimal 6 karakter.");
         return;
     }
 
-    if (!validPassword(password)) {
-        alert("Password minimal 8 karakter.");
-        return;
-    }
-
-    const db = loadDB();
-
+    const db = await loadDB();
     if (db.users.some(u => u.username === username)) {
         alert("Username sudah digunakan.");
         return;
     }
 
     try {
-
         const passwordHash = await hashPassword(password);
-
-        const latestDB = loadDB();
-
-        if (latestDB.users.some(u => u.username === username)) {
-            alert("Username sudah digunakan.");
-            return;
-        }
-
-        latestDB.users.push({
-
-            id: crypto.randomUUID(),
+        const newMember = {
             name,
             username,
-            passwordHash,
+            password_hash: passwordHash,
             department,
-            role: "employee",
-            active: true,
-            createdAt: new Date().toISOString()
+            role: "member",
+            active: true
+        };
 
-        });
+        if (supabaseClient) {
+            const { error } = await supabaseClient.from('users').insert([newMember]);
+            if (error) {
+                alert("Gagal menambahkan member ke Supabase: " + error.message);
+                return;
+            }
+        }
 
-        if (!saveDB(latestDB)) return;
-
-        alert("Karyawan berhasil ditambahkan.");
-
+        alert("Member berhasil ditambahkan.");
         this.reset();
-
-        renderEmployeeManagement();
-        renderAdminDashboard();
-
+        await renderMemberManagement();
+        await renderAdminDashboard();
     } catch (err) {
-
         alert(err.message);
-
     }
-
 });
 
-
-/* ===================================
-   EMPLOYEE ACCOUNT TABLE
-=================================== */
-
-function renderEmployeeManagement() {
-
+async function renderMemberManagement() {
     if (!requireRole("admin")) return;
-
-    const db = loadDB();
-
-    const employees = db.users.filter(u =>
-        u.role === "employee"
-    );
-
-    const table = document.getElementById("employeeTable");
-
+    const db = await loadDB();
+    const members = db.users.filter(u => u.role === "member");
+    const table = document.getElementById("memberTable");
     table.replaceChildren();
 
-    document.getElementById("employeeTableEmpty")
-        .classList.toggle("hidden", employees.length > 0);
+    document.getElementById("memberTableEmpty").classList.toggle("hidden", members.length > 0);
 
-    employees.forEach(user => {
-
+    members.forEach(user => {
         const tr = document.createElement("tr");
-
-        const name = document.createElement("td");
-        name.textContent = user.name;
-
-        const username = document.createElement("td");
-        username.textContent = user.username;
-
-        const department = document.createElement("td");
-        department.textContent = user.department;
-
-        const status = document.createElement("td");
-
+        
+        const tdName = document.createElement("td"); tdName.textContent = user.name;
+        const tdUser = document.createElement("td"); tdUser.textContent = user.username;
+        const tdDept = document.createElement("td"); tdDept.textContent = user.department;
+        
+        const tdStatus = document.createElement("td");
         const badge = document.createElement("span");
-
-        badge.className = user.active
-            ? "status status-active"
-            : "status status-inactive";
-
+        badge.className = user.active ? "status status-active" : "status status-inactive";
         badge.textContent = user.active ? "Aktif" : "Nonaktif";
+        tdStatus.appendChild(badge);
 
-        status.appendChild(badge);
-
-        const action = document.createElement("td");
-
+        const tdAction = document.createElement("td");
         const toggle = document.createElement("button");
-
-        toggle.className = user.active
-            ? "btn btn-danger"
-            : "btn btn-success";
-
+        toggle.className = user.active ? "btn btn-danger" : "btn btn-success";
         toggle.style.padding = "7px 10px";
         toggle.style.fontSize = "11px";
+        toggle.textContent = user.active ? "Nonaktifkan" : "Aktifkan";
 
-        toggle.textContent = user.active
-            ? "Nonaktifkan"
-            : "Aktifkan";
-
-        toggle.addEventListener("click", () => {
-
+        toggle.addEventListener("click", async () => {
             if (!requireRole("admin")) return;
-
-            if (!confirm(
-                `${user.active ? "Nonaktifkan" : "Aktifkan"} akun ${user.name}?`
-            )) return;
-
-            const latestDB = loadDB();
-
-            const target = latestDB.users.find(u =>
-                u.id === user.id &&
-                u.role === "employee"
-            );
-
-            if (!target) return;
-
-            target.active = !target.active;
-
-            if (!saveDB(latestDB)) return;
-
-            renderEmployeeManagement();
-
+            if (supabaseClient) {
+                const { error } = await supabaseClient
+                    .from('users')
+                    .update({ active: !user.active })
+                    .eq('id', user.id);
+                
+                if (error) {
+                    alert("Gagal memperbarui status akun: " + error.message);
+                    return;
+                }
+            }
+            await renderMemberManagement();
         });
 
-        action.appendChild(toggle);
-
-        [
-            name,
-            username,
-            department,
-            status,
-            action
-        ].forEach(td => tr.appendChild(td));
-
+        tdAction.appendChild(toggle);
+        [tdName, tdUser, tdDept, tdStatus, tdAction].forEach(td => tr.appendChild(td));
         table.appendChild(tr);
-
     });
-
 }
 
-
-/* ===================================
-   REFRESH APPLICATION DATA
-=================================== */
-
-function refreshData() {
-
+async function refreshData() {
     if (!currentUser) return;
-
     if (currentUser.role === "admin") {
-
-        renderAdminDashboard();
-
-        if (!document.getElementById("employeesPage").classList.contains("hidden")) {
-            renderEmployeeManagement();
+        await renderAdminDashboard();
+        if (!document.getElementById("membersManagementPage").classList.contains("hidden")) {
+            await renderMemberManagement();
         }
-
     } else {
-
-        renderEmployeeDashboard();
-        renderEmployeeHistory();
-        renderCalendar();
-
+        await renderMemberDashboard();
+        await renderMemberHistory();
+        await renderCalendar();
     }
-
 }
 
-
-/* ===================================
-   RESTORE SESSION
-=================================== */
-
-function restoreSession() {
-
+async function restoreSession() {
     try {
-
-        const saved = JSON.parse(
-            sessionStorage.getItem(SESSION_KEY) || "null"
-        );
-
+        const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
         if (!saved || !saved.id) {
-            showAuth(employeeLogin);
+            showAuth(memberLogin);
             return;
         }
-
-        // Validasi kembali role dan status akun
-        // terhadap database lokal.
-
-        const db = loadDB();
-
-        const user = db.users.find(u =>
-            u.id === saved.id &&
-            u.active === true &&
-            u.role === saved.role
-        );
-
+        const db = await loadDB();
+        const user = db.users.find(u => u.id === saved.id && u.active === true && u.role === saved.role);
         if (!user) {
             logout();
             return;
         }
-
         loginUser(user);
-
     } catch {
-
         logout();
-
     }
-
 }
 
-
-/* ===================================
-   INITIALIZE
-=================================== */
-
 restoreSession();
-
 </script>
 
 </body>
