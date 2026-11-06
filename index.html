@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attendify 2.0 - Halaqah Attendance System (Supabase)</title>
 <!-- SDK Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    /* ===================================
+   KONFIGURASI SUPABASE
+=================================== */
+    const SUPABASE_URL = 'https://rpozbdgigvzxpzrfsqay.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_I87la83LPy4EQPJ3Luvc4Q_E0U0xO8z';
+    let supabaseClient = null;
+
+    if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && window.supabase) {supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);}
+</script>
 
 <style>
 :root {
